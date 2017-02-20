@@ -8,7 +8,6 @@ do
   svn up
   ATIME=`stat -f %Z shell/results.json`
   if [[ "$ATIME" != "$LTIME" ]]
-  #if [ 1 -eq 1 ]
   then
       # send slack notification
       # TODO: Make message specific to AG result and attach random pic of doggo.
