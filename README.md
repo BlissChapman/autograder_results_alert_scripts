@@ -1,2 +1,2 @@
-# autograder_results_alert_script
-A simple script that sends a slack notification when CS241 Autograder results are uploaded.
+# autograder_results_alert_scripts
+A collection of simple scripts that send slack notifications when UIUC CS autograding results are uploaded.
