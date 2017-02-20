@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# TODO: Make this generic for any AG results.
+LTIME=`stat -f %Z shell/results.json`
+
+while true
+do
+  svn up
+  ATIME=`stat -f %Z shell/results.json`
+  if [[ "$ATIME" != "$LTIME" ]]
+  then
+      # send slack notification
+      # TODO: Make message specific to AG result and attach random pic of doggo.
+      curl -X POST -H 'Content-type: application/json' --data '{"text":"@channel Shell Autograder results released!"}' https://hooks.slack.com/services/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
+
+      # For local notifications on macOS:
+      # osascript -e 'display notification "CS241 AG results were released!" with title "AG Results"'
+      exit 0
+  fi
+  sleep 60
+done
