@@ -1,8 +1,14 @@
+#################################################
+# Required environment variables:               #
+# A2G_USERNAME: username for SVN                #
+# A2G_PASSWORD: password for SVN                #
+# A2G_WEBHOOK: unique part of Slack webhook URL #
+#################################################
+
 import pickledb
 import requests
 import os
 import sys
-import time
 import xml.etree.ElementTree as ET
 import hashlib
 
