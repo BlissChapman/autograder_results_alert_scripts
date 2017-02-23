@@ -22,14 +22,15 @@ def get_assignment_list():
         xmlroot = ET.fromstring(htmlstr)
         assignments = []
         for i in range(1, len(xmlroot)):
-            assignments.append(xmlroot[i][0].text[:-1])
+            if xmlroot[i][0].text[-1:] == '/':
+                assignments.append(xmlroot[i][0].text[:-1])
         return assignments
     return None
 
 def get_result_hash(assignment):
     r = requests.get(SVN_BASE_URL + os.environ['A2G_USERNAME'] + '/' + assignment + '/results.json', auth=(os.environ['A2G_USERNAME'], os.environ['A2G_PASSWORD']))
     if r.status_code != 200:
-        return None
+        return ''
     return hashlib.md5(r.text).hexdigest()
 
 # MAIN
@@ -38,7 +39,7 @@ db = pickledb.load('db0.db', False)
 assignments = get_assignment_list()
 
 if not (db.get('init')):
-    print "First run; building database..." 
+    print "First run; building database..."
     db.dcreate(DB_HASH_DICT)
     for assignment in assignments:
         db.dadd(DB_HASH_DICT, (assignment, get_result_hash(assignment)))
