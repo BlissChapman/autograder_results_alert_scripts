@@ -8,6 +8,7 @@ import hashlib
 
 DB_HASH_DICT = 'hash_dict'
 SVN_BASE_URL = 'https://subversion.ews.illinois.edu/svn/sp17-cs241/'
+SLACK_BASE_URL = 'https://hooks.slack.com/services/'
 
 def initialize():
     print "Initializing..."
@@ -47,10 +48,16 @@ if not (db.get('init')):
     db.dump()
     sys.exit(0)
 
-print 'Updating assignment list...'
 assignments = get_assignment_list()
-print 'Assignments:'
 for assignment in assignments:
-    print '- ' + assignment + ": " + (db.dget(DB_HASH_DICT, assignment))
+    if db.dexists(DB_HASH_DICT, assignment):
+        newhash = get_result_hash(assignment)
+        if newhash != db.dget(DB_HASH_DICT, assignment):
+            # notify
+            payload_value = '{"text": "<!channel> Autograder results have been updated for ' + assignment + '."}'
+            r = requests.post(SLACK_BASE_URL + os.environ['A2G_WEBHOOK'], data={'payload': payload_value})
+            db.dadd(DB_HASH_DICT, (assignment, newhash))
+    else:
+        db.dadd(DB_HASH_DICT, (assignment, get_result_hash(assignment)))
 
 db.dump()
