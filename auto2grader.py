@@ -54,16 +54,16 @@ if not (db.get('init')):
     db.dump()
     sys.exit(0)
 
-assignments = get_assignment_list()
 for assignment in assignments:
     if db.dexists(DB_HASH_DICT, assignment):
         newhash = get_result_hash(assignment)
         if newhash != db.dget(DB_HASH_DICT, assignment):
+            db.dadd(DB_HASH_DICT, (assignment, newhash))
+            db.dump()
             # notify
             payload_value = '{"text": "<!channel> Autograder results have been updated for ' + assignment + '."}'
             r = requests.post(SLACK_BASE_URL + os.environ['A2G_WEBHOOK'], data={'payload': payload_value})
-            db.dadd(DB_HASH_DICT, (assignment, newhash))
     else:
         db.dadd(DB_HASH_DICT, (assignment, get_result_hash(assignment)))
+        db.dump()
 
-db.dump()
